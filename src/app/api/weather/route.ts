@@ -1,10 +1,20 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { fromError } from 'zod-validation-error';
-import { getCurrentWeather, getGeocoding } from '~/server/open-weather-map-api';
+import {
+  CurrentWeatherResponseSchema,
+  GeocodingLocationSchema,
+  getCurrentWeather,
+  getGeocoding,
+} from '~/server/open-weather-map-api';
 
 const CurrentWeatherRouteSearchParamsSchema = z.object({
   location: z.string({ required_error: 'You must provide a location' }),
+});
+
+export const CurrentWeatherRouteResponseSchema = z.object({
+  geocodedLocation: GeocodingLocationSchema,
+  weather: CurrentWeatherResponseSchema,
 });
 
 export async function GET(request: NextRequest) {
@@ -43,7 +53,11 @@ export async function GET(request: NextRequest) {
       lon: geocodedLocation.lon,
     });
 
-    return Response.json({ geocodedLocation, weather });
+    const finalData: z.infer<typeof CurrentWeatherRouteResponseSchema> = {
+      geocodedLocation,
+      weather,
+    };
+    return Response.json(finalData);
   } catch (error) {
     // You'd probably have some automatic observability set up to handle this but I'll console log
     // the error here to act as a proxy for that sort of set up

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { z } from 'zod';
 
 // Only including the fields we care about for the point of this "demo" application, for brevity reasons
-const GeocodingLocationSchema = z.object({
+export const GeocodingLocationSchema = z.object({
   name: z.string(),
   lat: z.number(),
   lon: z.number(),
@@ -78,7 +78,6 @@ export async function getCurrentWeather(input: { lat: number; lon: number }) {
   // The "weather" response is an array here, but we only expect a singular element for this
   // as it's the current weather forecast. Let's take that array and only return the single
   // element so the consumer of this function has an easier time
-
   const currentWeather = data.weather[0];
   if (!currentWeather) {
     throw new Error('Could not find the current weather information');

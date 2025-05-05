@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { fromError } from 'zod-validation-error';
 import {
+  CurrentWeatherResponseSchema,
   getGeocoding,
   getWeatherForecast,
 } from '~/server/open-weather-map-api';
@@ -19,6 +20,13 @@ const WeatherForecastRouteSearchParamsSchema = z.object({
     .default(3),
 });
 
+export const WeatherForecastRouteResponseSchema = z
+  .object({
+    date: z.string(),
+    forecast: CurrentWeatherResponseSchema,
+  })
+  .array();
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
 
@@ -27,7 +35,6 @@ export async function GET(request: NextRequest) {
       Object.fromEntries(searchParams)
     );
   if (!searchParamsParseResult.success) {
-    console.log(searchParamsParseResult.error);
     return new Response(
       `Invalid search params. ${fromError(searchParamsParseResult.error)}`,
       {
@@ -57,14 +64,14 @@ export async function GET(request: NextRequest) {
       days: searchParamsData.days,
     });
 
-    return Response.json(forecast);
+    const finalData: z.infer<typeof WeatherForecastRouteResponseSchema> =
+      forecast;
+    return Response.json(finalData);
   } catch (error) {
     // You'd probably have some automatic observability set up to handle this but I'll console log
     // the error here to act as a proxy for that sort of set up
     console.error(error);
 
-    // We don't want to bubble up the error to the client here because it might have sensitive
-    // backend information in it. Hence, we will just give a generic response
     return new Response(
       `An erorr has ocurred when getting the weather forecast data`,
       {
