@@ -1,7 +1,5 @@
 # Weather Forecast App
 
-You can try the application here: https://weather-forecast-app-sand-eight.vercel.app/
-
 ## Getting started
 
 1. Ensure you have Node.js version 22 installed.
