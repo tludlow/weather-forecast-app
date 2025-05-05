@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import ForecastDetails from '~/components/forecast-details';
 
 interface ForecastPageProps {
   searchParams: Promise<{ location?: string }>;
@@ -40,7 +41,7 @@ export default async function ForecastPage(props: ForecastPageProps) {
 
       <div className='mt-6 flex flex-col items-center gap-y-3'>
         <p className='text-xl font-semibold'>Current forecast:</p>
-        <p>TODO</p>
+        <ForecastDetails forecast={currentWeatherJson.weather} />
       </div>
     </div>
   );
