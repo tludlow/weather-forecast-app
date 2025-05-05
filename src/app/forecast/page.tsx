@@ -58,12 +58,12 @@ export default async function ForecastPage(props: ForecastPageProps) {
         </span>
       </h1>
 
-      <div className='mt-6 flex flex-col items-center gap-y-3'>
+      <section className='mt-6 flex flex-col items-center gap-y-3'>
         <p className='text-xl font-semibold'>Current forecast:</p>
         <ForecastDetails forecast={currentWeatherData.weather} />
-      </div>
+      </section>
 
-      <div className='mt-12 border-t border-neutral-300 pt-4'>
+      <section className='mt-12 border-t border-neutral-300 pt-4'>
         <div className='flex items-center gap-x-4'>
           <h2 className='text-xl font-bold'>{forecastDays} Day Forecast</h2>
 
@@ -90,7 +90,7 @@ export default async function ForecastPage(props: ForecastPageProps) {
             </div>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
