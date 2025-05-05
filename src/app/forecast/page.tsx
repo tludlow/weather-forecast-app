@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import ForecastDetails from '~/components/forecast-details';
@@ -24,14 +25,22 @@ export default async function ForecastPage(props: ForecastPageProps) {
 
   const forecastDays = Number(days ?? 3);
 
-  const currentWeatherResponse = await fetch(
-    `http://localhost:3000/api/weather?location=${location}`
-  );
+  const [currentWeatherResponse, forecastResponse] = await Promise.all([
+    fetch(`http://localhost:3000/api/weather?location=${location}`),
+    fetch(
+      `http://localhost:3000/api/forecast?location=${location}&days=${forecastDays}`
+    ),
+  ]);
 
   if (!currentWeatherResponse.ok) {
     throw new Error('An error ocurred getting the weather data');
   }
   const currentWeatherJson = await currentWeatherResponse.json();
+
+  if (!forecastResponse.ok) {
+    throw new Error('An error ocurred getting the forecast data');
+  }
+  const forecastJson = await forecastResponse.json();
 
   return (
     <div className='mt-12 flex flex-col items-center'>
@@ -61,7 +70,19 @@ export default async function ForecastPage(props: ForecastPageProps) {
           )}
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4'></div>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4'>
+          {forecastJson.map((dailyForecast) => (
+            <div
+              key={dailyForecast.date}
+              className='flex flex-col items-center gap-y-2'
+            >
+              <p className='font-semibold'>
+                {dayjs(dailyForecast.date).format('dddd, D MMMM')}
+              </p>
+              <ForecastDetails forecast={dailyForecast.forecast} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
